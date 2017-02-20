@@ -6,13 +6,11 @@
   <script>
   /* Scripts */
 
+  var database = firebase.database();
+
   riot.store.cardWidth = 220
   riot.store.cardHeight = 250
 /*     ^ Sets the global store props for each card in the grid */
-
-
-
-
 
   riot.store.rows = [
     {
@@ -75,8 +73,7 @@
       ]
     }
   ]
-
   </script>
-
+  
 
 </app>

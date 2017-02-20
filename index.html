@@ -12,7 +12,6 @@
   </head>
 
   <body>
-
     <app></app>
 
 <!-- Included Scripts -->
@@ -28,9 +27,24 @@
     <script type="text/javascript">
       riot.store = new Store()
       riot.mount('*')
-
     </script>
+
+<!-- Drag and drop -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
+
+<!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyC2B3E_9Uy1psu4t01rOW0rJTe_N_YHGS4",
+        authDomain: "leanlanes-becb2.firebaseapp.com",
+        databaseURL: "https://leanlanes-becb2.firebaseio.com",
+        storageBucket: "leanlanes-becb2.appspot.com",
+        messagingSenderId: "310142705653"
+      };
+      firebase.initializeApp(config);
+    </script>
 
   </body>
 
