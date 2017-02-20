@@ -15,7 +15,7 @@
                     </div>
                     <div class="field">
                       <label>Details</label>
-                      <textarea rows="3" ref="input_card_detail" type="text" value={row.detail}></textarea>
+                      <textarea rows="3" ref="input_card_detail" value={row.detail}></textarea>
                     </div>
                     <div onclick={editTitle} class="ui button" tabindex="0">Update</div>
                 </div>
