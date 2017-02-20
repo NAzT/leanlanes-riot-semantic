@@ -1,0 +1,37 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>LeanLanes</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+  </head>
+
+  <body>
+
+    <app></app>
+
+<!-- Included Scripts -->
+    <script src="semantic/dist/semantic.min.js"></script>
+    <script src="https://rawgit.com/riot/riot/master/riot%2Bcompiler.min.js"></script>
+    <script type="riot/tag" src="my_src/tags/app.tag"></script>
+    <script type="riot/tag" src="my_src/tags/row.tag"></script>
+    <script type="riot/tag" src="my_src/tags/card.tag"></script>
+    <script type="riot/tag" src="my_src/tags/new-card.tag"></script>
+    <script type="riot/tag" src="my_src/tags/global-header.tag"></script>
+    <script src="my_src/js/Store.js"></script>
+
+    <script type="text/javascript">
+      riot.store = new Store()
+      riot.mount('*')
+
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
+
+  </body>
+
+</html>
