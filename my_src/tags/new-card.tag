@@ -41,13 +41,13 @@
 
     var cardData = {
       name : newCardName,
-      details : newCardDetails,
+      details : newCardDetails
     }
 
     // Write the new card's data simultaneously in the cards list and the row's card list.
     var updates = {}
     updates['/cards/' + newCardKey] = cardData
-    updates['/rows/' + rowId + '/' + newCardKey] = cardData;
+    updates['/rows-cards/' + rowId + '/' + newCardKey] = cardData
 
     this.refs.input_new_card_name.value = ''
     this.refs.txtfield_new_card_details.value = ''

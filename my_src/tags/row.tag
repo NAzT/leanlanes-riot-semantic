@@ -6,8 +6,8 @@
 
           <div class="row-header" dblclick={editTitle}>
               <div id={row.id}>
-                <h3 hide={row.selected}>{row.title}</h3>
-                <p hide={row.selected}>{row.detail}</p>
+                <h3 hide={row.selected}>{row.name}</h3>
+                <p hide={row.selected}>{row.details}</p>
                 <div show={row.selected} class="ui form">
                     <div class="field">
                       <label>Title</label>
@@ -91,13 +91,41 @@
   <script>
 
     /* Properties */
-    this.rows = riot.store.rows
+    
     this.cardImgHeight = riot.store.cardHeight
     this.cardImgWidth = riot.store.cardWidth
     this.edit_title_state = false
+    this.rows = riot.store.rows = []
+    
+    // First pass setting rows up
+    setRows()
 
+    // updates the interface with row changes
+    watch_Rows () {
+      this.rows = riot.store.rows
+      console.log(this.rows)
+      this.update()
+    }
+    
+    // Make rows reactive to changes
+    riot.store.on('set_new_rows',this.watch_Rows)
+
+    // Interaction
     editTitle(e) {
         event.item.row.selected = !event.item.row.selected
+    }
+
+    function setRows() {
+      var currRows = riot.store.rows
+      var rowsRef = firebase.database().ref().child('rows')
+      rowsRef.once('value', snap => {
+        snap.forEach(item => { 
+          currRows.push(item.val()) 
+        })
+      }).then(function() {
+        riot.store.rows = currRows
+        riot.store.trigger('set_new_rows')
+      })
     }
 
   </script>
