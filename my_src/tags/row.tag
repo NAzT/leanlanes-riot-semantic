@@ -2,10 +2,10 @@
 
   <div id="grid-container">
 
-    <div each={row in rows} class="new-width" >
+    <div each={row in rows} class="new-width" id={row.id}>
 
           <div class="row-header" dblclick={editTitle}>
-              <div id={row.id}>
+              <div>
                 <h3 hide={row.selected}>{row.name}</h3>
                 <p hide={row.selected}>{row.details}</p>
                 <div show={row.selected} class="ui form">
@@ -96,37 +96,52 @@
     this.cardImgWidth = riot.store.cardWidth
     this.edit_title_state = false
     this.rows = riot.store.rows = []
-    
-    // First pass setting rows up
-    setRows()
 
-    // updates the interface with row changes
-    watch_Rows () {
-      this.rows = riot.store.rows
-      console.log(this.rows)
-      this.update()
+    /* ROWS */
+    self = this
+    setup_Rows () {
+      let rowsRef = firebase.database().ref().child('rows')
+      rowsRef.on('child_added', function(r) {
+        let rowObj = {}
+
+        rowObj = {
+          id : r.key,
+          name : r.val().name,
+          details : r.val().details,
+          cards : []
+        }
+        riot.store.rows.push(rowObj)
+        addCards(r.key)
+        self.update()
+      })
+
+      function addCards(rowId) {
+        let cardsRef = firebase.database().ref('rows-cards/' + rowId)
+        riot.store.rows.forEach(function(row, i) {
+          if (row.id == rowId) {
+            cardsRef.on('child_added', function(c) {
+              let cardObj = {}
+
+              cardObj = {
+                id : c.key,
+                title : c.val().name,
+                detail : c.val().details
+              }
+
+              riot.store.rows[i].cards.push(cardObj)
+              self.update()
+            })
+          }
+        })
+      }
     }
-    
-    // Make rows reactive to changes
-    riot.store.on('set_new_rows',this.watch_Rows)
 
-    // Interaction
+    /* INTERACTIONS */
     editTitle(e) {
         event.item.row.selected = !event.item.row.selected
     }
 
-    function setRows() {
-      var currRows = riot.store.rows
-      var rowsRef = firebase.database().ref().child('rows')
-      rowsRef.once('value', snap => {
-        snap.forEach(item => { 
-          currRows.push(item.val()) 
-        })
-      }).then(function() {
-        riot.store.rows = currRows
-        riot.store.trigger('set_new_rows')
-      })
-    }
+    this.setup_Rows()
 
   </script>
 

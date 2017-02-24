@@ -39,6 +39,7 @@
 // Set props //
     this.title          = this.card.title
     this.detail         = this.card.detail
+    var belongsToRowId  = this.parent.row.id
 
 // Set methods //
     set_cardDimensions () {

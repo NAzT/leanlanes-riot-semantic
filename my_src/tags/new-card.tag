@@ -31,7 +31,15 @@
 
   <script>
 
-  this.rowId = opts.row_id
+  this.rowId          = opts.row_id
+  this.cardImgWidth   = riot.store.cardWidth
+
+  this.on('mount', function() {
+    $('.card-dims')
+      .css({
+        "width"  : this.cardImgWidth
+      })
+    })
 
   newCard() {
     rowId = this.rowId
@@ -52,7 +60,7 @@
     this.refs.input_new_card_name.value = ''
     this.refs.txtfield_new_card_details.value = ''
 
-    return firebase.database().ref().update(updates)
+    firebase.database().ref().update(updates)
   }
 
   </script>
