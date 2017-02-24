@@ -31,7 +31,15 @@
 
   <script>
 
-  this.rowId = opts.row_id
+  this.rowId          = opts.row_id
+  this.cardImgWidth   = riot.store.cardWidth
+
+  this.on('mount', function() {
+    $('.card-dims')
+      .css({
+        "width"  : this.cardImgWidth
+      })
+    })
 
   newCard() {
     rowId = this.rowId
@@ -41,18 +49,18 @@
 
     var cardData = {
       name : newCardName,
-      details : newCardDetails,
+      details : newCardDetails
     }
 
     // Write the new card's data simultaneously in the cards list and the row's card list.
     var updates = {}
     updates['/cards/' + newCardKey] = cardData
-    updates['/rows/' + rowId + '/' + newCardKey] = cardData;
+    updates['/rows-cards/' + rowId + '/' + newCardKey] = cardData
 
     this.refs.input_new_card_name.value = ''
     this.refs.txtfield_new_card_details.value = ''
 
-    return firebase.database().ref().update(updates)
+    firebase.database().ref().update(updates)
   }
 
   </script>

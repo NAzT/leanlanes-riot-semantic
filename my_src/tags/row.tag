@@ -2,12 +2,12 @@
 
   <div id="grid-container">
 
-    <div each={row in rows} class="new-width" >
+    <div each={row in rows} class="new-width" id={row.id}>
 
           <div class="row-header" dblclick={editTitle}>
-              <div id={row.id}>
-                <h3 hide={row.selected}>{row.title}</h3>
-                <p hide={row.selected}>{row.detail}</p>
+              <div>
+                <h3 hide={row.selected}>{row.name}</h3>
+                <p hide={row.selected}>{row.details}</p>
                 <div show={row.selected} class="ui form">
                     <div class="field">
                       <label>Title</label>
@@ -15,7 +15,7 @@
                     </div>
                     <div class="field">
                       <label>Details</label>
-                      <textarea rows="3" ref="input_card_detail" type="text" value={row.detail}></textarea>
+                      <textarea rows="3" ref="input_card_detail" value={row.detail}></textarea>
                     </div>
                     <div onclick={editTitle} class="ui button" tabindex="0">Update</div>
                 </div>
@@ -32,6 +32,8 @@
           <div style="clear:both"></div>
 
     </div>
+
+    <new-row></new-row>
 
   </div>
 
@@ -89,14 +91,57 @@
   <script>
 
     /* Properties */
-    this.rows = riot.store.rows
+    
     this.cardImgHeight = riot.store.cardHeight
     this.cardImgWidth = riot.store.cardWidth
     this.edit_title_state = false
+    this.rows = riot.store.rows = []
 
+    /* ROWS */
+    self = this
+    setup_Rows () {
+      let rowsRef = firebase.database().ref().child('rows')
+      rowsRef.on('child_added', function(r) {
+        let rowObj = {}
+
+        rowObj = {
+          id : r.key,
+          name : r.val().name,
+          details : r.val().details,
+          cards : []
+        }
+        riot.store.rows.push(rowObj)
+        addCards(r.key)
+        self.update()
+      })
+
+      function addCards(rowId) {
+        let cardsRef = firebase.database().ref('rows-cards/' + rowId)
+        riot.store.rows.forEach(function(row, i) {
+          if (row.id == rowId) {
+            cardsRef.on('child_added', function(c) {
+              let cardObj = {}
+
+              cardObj = {
+                id : c.key,
+                title : c.val().name,
+                detail : c.val().details
+              }
+
+              riot.store.rows[i].cards.push(cardObj)
+              self.update()
+            })
+          }
+        })
+      }
+    }
+
+    /* INTERACTIONS */
     editTitle(e) {
         event.item.row.selected = !event.item.row.selected
     }
+
+    this.setup_Rows()
 
   </script>
 
