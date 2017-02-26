@@ -4,7 +4,7 @@
   <div class="card-dims card">
 
         <div class="image thumb">
-          <img src='{ imgHtml }' alt="">
+          <img src='{ url }' alt="">
         </div>
         <div class="content">
 
@@ -39,6 +39,7 @@
 // Set props //
     this.title          = this.card.title
     this.detail         = this.card.detail
+    this.url            = this.card.url
     var belongsToRowId  = this.parent.row.id
 
 // Set methods //

@@ -119,8 +119,9 @@
       rowsRef.on('child_changed', function(r){
         riot.store.rows.forEach(function(row, i) {
           if (row.id == r.key) {
-            riot.store.rows[i].name = r.val().name,
+            riot.store.rows[i].name = r.val().name
             riot.store.rows[i].details = r.val().details
+            riot.store.rows[i].url = r.val().url
             self.update()
           }
         })
@@ -136,7 +137,8 @@
               cardObj = {
                 id : c.key,
                 title : c.val().name,
-                detail : c.val().details
+                detail : c.val().details,
+                url : c.val().url
               }
 
               riot.store.rows[i].cards.push(cardObj)

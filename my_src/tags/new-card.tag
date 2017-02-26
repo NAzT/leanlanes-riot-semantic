@@ -48,8 +48,9 @@
     let newCardName = this.refs.input_new_card_name.value
     let newCardDetails = this.refs.txtfield_new_card_details.value
 
-    // cardDatabase.setCardText(rowId,newCardName,newCardDetails)
-    // cardDatabase.addCard()
+    cardDatabase.setCardText(rowId,newCardName,newCardDetails)
+    cardDatabase.checks()
+    cardDatabase.addCard()
 
     this.refs.input_new_card_name.value = ''
     this.refs.txtfield_new_card_details.value = ''
@@ -58,7 +59,7 @@
 
   imgUpload(e) {
     let file = e.target.files[0]
-    cardDatabase.setCardImage(file)
+    cardDatabase.setCardImageFile(file)
   }
 
   var cardDatabase = (function () {
@@ -72,32 +73,28 @@
         }
         var _updates = {} 
         
-        function _doUpdate(ud) {
+        function _doUpdate(ud,cd) {
+          let newCardImgName = _selectedImgFile.name
+          let newCardImgStorageRef = firebase.storage().ref('card-images/' + newCardImgName)
+          let uploadTask = newCardImgStorageRef.put(_selectedImgFile)
           let newCardKey = ""
 
-          newCardKey = firebase.database().ref().child('cards').push().key
-          ud['/cards/' + newCardKey] = _cardData
-          ud['/rows-cards/' + _rowId + '/' + newCardKey] = _cardData
-          firebase.database().ref().update(ud)
-        }
-
-        function _doImgUpdate() {
-          let newCardImgName = _selectedImgFile.name
-          let newCardImgStorageRef = firebase.storage().ref('card-images/' + _newCardImgName)
-          let uploadTask = newCardImgStorageRef.put(_selectedImgFile)
- 
           uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
             function(snapshot) {
 
             }, function(error) {
 
             }, function() {
-              _cardData.url = uploadTask.snapshot.downloadURL 
+              cd.url = uploadTask.snapshot.downloadURL
+              newCardKey = firebase.database().ref().child('cards').push().key
+              ud['/cards/' + newCardKey] = cd
+              ud['/rows-cards/' + _rowId + '/' + newCardKey] = cd
+              firebase.database().ref().update(ud)
           })
+        }
 
         function addCard() {
-          _doImgUpdate()
-          // _doUpdate(_updates)
+          _doUpdate(_updates,_cardData)
         }
 
         function checks() {
@@ -116,33 +113,18 @@
  
         return {
             // Methods
-            setCardText     : setCardText,
-            setCardImage    : setCardImgObj,
-            addCard         : addCard,
-            checks          : checks
+            setCardText       : setCardText,
+            setCardImageFile  : setCardImgObj,
+            addCard           : addCard,
+            checks            : checks
         }
  
     })()
 
 /*
-storageRef.child('images/stars.jpg').getDownloadURL().then(function(url) {
-  // `url` is the download URL for 'images/stars.jpg'
-
-  // This can be downloaded directly:
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'blob';
-  xhr.onload = function(event) {
-    var blob = xhr.response;
-  };
-  xhr.open('GET', url);
-  xhr.send();
-
   // Or inserted into an <img> element:
   var img = document.getElementById('myimg');
   img.src = url;
-}).catch(function(error) {
-  // Handle any errors
-});
 */
 
   </script>
