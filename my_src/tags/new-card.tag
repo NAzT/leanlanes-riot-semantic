@@ -44,20 +44,24 @@
     })
 
   newCard() {
+    // Get data passed from parent tag via opts
     let rowId = opts.row_id
+    // Get data from interface
     let newCardName = this.refs.input_new_card_name.value
     let newCardDetails = this.refs.txtfield_new_card_details.value
 
+    // Add card data to database
     cardDatabase.setCardText(rowId,newCardName,newCardDetails)
-    cardDatabase.checks()
     cardDatabase.addCard()
 
+    // Reset the form fields
     this.refs.input_new_card_name.value = ''
     this.refs.txtfield_new_card_details.value = ''
     $("#cardFileUpload").replaceWith($("#cardFileUpload").val('').clone(true));
   }
 
   imgUpload(e) {
+    // 
     let file = e.target.files[0]
     cardDatabase.setCardImageFile(file)
   }
@@ -65,7 +69,8 @@
   var cardDatabase = (function () {
         // Properties
         let _rowId = "" 
-        let _selectedImgFile = "" // The image file 
+        let _selectedImgFile = "" // The image file
+        let _imgFileLoaded = false // returns whether a file was uploaded
         let _cardData = {
           name : "",
           details : "",
@@ -73,32 +78,40 @@
         }
         var _updates = {} 
         
-        function _doUpdate(ud,cd) {
-          let newCardImgName = _selectedImgFile.name
-          let newCardImgStorageRef = firebase.storage().ref('card-images/' + newCardImgName)
-          let uploadTask = newCardImgStorageRef.put(_selectedImgFile)
+        // PRIVATE METHODS //
+        // Adds a new card to Firebase
+        function _doUpdate(ud,cd,bounceBack) {
           let newCardKey = ""
 
-          uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
-            function(snapshot) {
+          if (_imgFileLoaded == true) {
+              let newCardImgName = _selectedImgFile.name
+              let newCardImgStorageRef = firebase.storage().ref('card-images/' + newCardImgName)
+              let uploadTask = newCardImgStorageRef.put(_selectedImgFile)
 
-            }, function(error) {
+              uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+                function(snapshot) {
 
-            }, function() {
-              cd.url = uploadTask.snapshot.downloadURL
-              newCardKey = firebase.database().ref().child('cards').push().key
-              ud['/cards/' + newCardKey] = cd
-              ud['/rows-cards/' + _rowId + '/' + newCardKey] = cd
-              firebase.database().ref().update(ud)
-          })
+                }, function(error) {
+                  console.log(error)
+                }, function() {
+                  cd.url = uploadTask.snapshot.downloadURL
+                  bounceBack(ud,cd)
+              })
+            } else {
+              bounceBack(ud,cd)
+            }
         }
 
+        function _uploadText(ud,cd) {
+            newCardKey = firebase.database().ref().child('cards').push().key
+            ud['/cards/' + newCardKey] = cd
+            ud['/rows-cards/' + _rowId + '/' + newCardKey] = cd
+            firebase.database().ref().update(ud)
+        }
+        
+        // PUBLIC METHODS //
         function addCard() {
-          _doUpdate(_updates,_cardData)
-        }
-
-        function checks() {
-          console.log(_updates,_rowId,_cardData,_selectedImgFile.name)
+          _doUpdate(_updates,_cardData,_uploadText)
         }
  
         function setCardText(rid,cn,cd) {
@@ -109,23 +122,17 @@
 
         function setCardImgObj(f) {
             _selectedImgFile = f
+            _imgFileLoaded = true
         }
  
         return {
-            // Methods
+            // API
             setCardText       : setCardText,
             setCardImageFile  : setCardImgObj,
-            addCard           : addCard,
-            checks            : checks
+            addCard           : addCard
         }
  
     })()
-
-/*
-  // Or inserted into an <img> element:
-  var img = document.getElementById('myimg');
-  img.src = url;
-*/
 
   </script>
 

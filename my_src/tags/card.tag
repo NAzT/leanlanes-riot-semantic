@@ -4,7 +4,7 @@
   <div class="card-dims card">
 
         <div class="image thumb">
-          <img src='{ url }' alt="">
+          <img if={imgIsThere} src='{ url }' alt="">
         </div>
         <div class="content">
 
@@ -41,6 +41,18 @@
     this.detail         = this.card.detail
     this.url            = this.card.url
     var belongsToRowId  = this.parent.row.id
+    
+    imgIsThere          = checkImgIsThere(this.url) // Change interface if img present
+
+    function checkImgIsThere(uyes){
+      if (uyes == "") {
+        console.log(uyes)
+        return false
+        // Remove img element by returning true to hide
+      } else {
+        return true
+      }
+    }
 
 // Set methods //
     set_cardDimensions () {
