@@ -74,7 +74,8 @@
         let _cardData = {
           name : "",
           details : "",
-          url : ""
+          url : "",
+          imgCardPresent : false
         }
         var _updates = {} 
         
@@ -82,8 +83,9 @@
         // Adds a new card to Firebase
         function _doUpdate(ud,cd,bounceBack) {
           let newCardKey = ""
+          console.log(cd)
 
-          if (_imgFileLoaded == true) {
+          if (cd.imgCardPresent == true) {
               let newCardImgName = _selectedImgFile.name
               let newCardImgStorageRef = firebase.storage().ref('card-images/' + newCardImgName)
               let uploadTask = newCardImgStorageRef.put(_selectedImgFile)
@@ -122,7 +124,7 @@
 
         function setCardImgObj(f) {
             _selectedImgFile = f
-            _imgFileLoaded = true
+            _cardData.imgCardPresent = true
         }
  
         return {

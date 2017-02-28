@@ -1,10 +1,10 @@
 <card>
   <!-- Card -->
 
-  <div class="card-dims card">
+  <div id={ id } class="card-dims card">
 
         <div class="image thumb">
-          <img if={imgIsThere} src='{ url }' alt="">
+          <img show={ imgIsThere } src='{ url }' alt="">
         </div>
         <div class="content">
 
@@ -15,7 +15,7 @@
               <div class="item">View Detail</div>
               <div class="item">Start Presentation</div>
               <div class="ui divider"></div>
-              <div class="item">Help</div>
+              <div onclick={removeCard} class="item">Delete</div>
             </div>
           </div>
 
@@ -40,21 +40,19 @@
     this.title          = this.card.title
     this.detail         = this.card.detail
     this.url            = this.card.url
-    var belongsToRowId  = this.parent.row.id
+    this.id             = this.card.id
+    this.cardsRowId     = this.parent.row.id
+    this.imgIsThere     = this.card.imgForCard
     
-    imgIsThere          = checkImgIsThere(this.url) // Change interface if img present
+// Set methods //
+    removeCard() {
+      let ud = {}
 
-    function checkImgIsThere(uyes){
-      if (uyes == "") {
-        console.log(uyes)
-        return false
-        // Remove img element by returning true to hide
-      } else {
-        return true
-      }
+      ud['/cards/' + this.id] = null
+      ud['/rows-cards/' + this.cardsRowId + '/' + this.id] = null
+      firebase.database().ref().update(ud)
     }
 
-// Set methods //
     set_cardDimensions () {
       this.cardImgHeight  = riot.store.cardHeight
       this.cardImgWidth   = riot.store.cardWidth
@@ -65,14 +63,17 @@
 // On Tag mount //
     this.on('mount', function() {
     // Mount semantic-ui interaction configuration //
-      $('.custom.ui.dropdown')
-        .dropdown({
-          "direction"   : "upward"
-        })
       $('.card-dims')
         .css({
           "width"  : this.cardImgWidth
         })
+      $('.ui.dropdown')
+        .dropdown()
+      })
+
+    this.on('unmount', function() {
+      $('.ui.dropdown')
+        .dropdown()
       })
 
 // Initialise state //

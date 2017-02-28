@@ -99,6 +99,7 @@
 
     /* ROWS */
     var rowsRef = firebase.database().ref().child('rows')
+    var cardsRef = firebase.database().ref().child('cards')
     self = this
     
     setup_Rows () {  
@@ -127,6 +128,18 @@
         })
       })
 
+      cardsRef.on('child_removed', function(c){
+        riot.store.rows.forEach(function(row, ri) {
+          riot.store.rows[ri].cards.forEach(function(card, ci) {
+            if (card.id == c.key) {
+              let newCardSet = riot.store.rows[ri].cards
+              newCardSet.splice(ci,1)
+              self.update()
+            }
+          })
+        })
+      })
+
       function addCards(rowId) {
         let cardsRef = firebase.database().ref('rows-cards/' + rowId)
         riot.store.rows.forEach(function(row, i) {
@@ -138,7 +151,8 @@
                 id : c.key,
                 title : c.val().name,
                 detail : c.val().details,
-                url : c.val().url
+                url : c.val().url,
+                imgForCard : c.val().imgCardPresent,
               }
 
               riot.store.rows[i].cards.push(cardObj)
